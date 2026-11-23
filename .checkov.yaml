@@ -1,0 +1,3 @@
+skip-path:
+  - demo-seguridad/01-inseguro
+  - demo-seguridad\01-inseguro

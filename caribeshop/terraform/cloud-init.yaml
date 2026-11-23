@@ -1,0 +1,28 @@
+#cloud-config
+# Instala la app de CaribeShop como servicio systemd. Sin pasos manuales.
+write_files:
+  - path: /opt/caribeshop/app.py
+    permissions: "0755"
+    content: |
+      ${app}
+  - path: /etc/systemd/system/caribeshop.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=CaribeShop app
+      After=network-online.target
+
+      [Service]
+      ExecStart=/usr/bin/python3 /opt/caribeshop/app.py
+      Restart=always
+      RestartSec=2
+      Environment=APP_PORT=80
+      Environment=KEY_VAULT_NAME=${key_vault_name}
+      Environment=SECRET_NAME=${secret_name}
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  - systemctl daemon-reload
+  - systemctl enable --now caribeshop.service
