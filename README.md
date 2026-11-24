@@ -54,7 +54,8 @@ en ambas configuraciones Terraform o Checkov. Para los PR del mismo repositorio 
 correctamente antes de que el `apply` quede en espera de aprobación del entorno `azure-apply`.
 Configura ese environment con un revisor requerido; tras aprobar, el job vuelve a planificar y
 aplica ese plan. Para destruir, inicia manualmente el workflow en `master` con `confirm_destroy=yes`;
-revisa el `destroy plan` y aprueba el mismo environment para ejecutar la destrucción.
+usa `.github/workflows/terraform-destroy.yml`, revisa el `destroy plan` y aprueba el mismo
+environment para ejecutar la destrucción.
 
 Configura estos Repository secrets: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`
 y `AZURE_SUBSCRIPTION_ID`. Configura además `OPERATOR_IPS` como variable con un arreglo JSON de

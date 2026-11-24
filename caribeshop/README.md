@@ -75,5 +75,6 @@ CSV/HTML se guardan en `../evidencias/`.
 El workflow valida formato, configuraciones y Checkov en cada PR. En PRs internos también ejecuta
 `terraform plan`. En un push a `master`, espera a que el plan termine antes de solicitar aprobación
 del environment `azure-apply`; después vuelve a planificar y aplica. Ver el README de la raíz para
-los Repository secrets y variables requeridos. Para destruir, inicia manualmente el workflow en
-`master`, confirma `yes`, revisa el plan de destrucción y aprueba el environment.
+los Repository secrets y variables requeridos. Para destruir, ve a Actions, inicia manualmente
+`Terraform destroy` en `master`, confirma `yes`, revisa el plan de destrucción y aprueba el
+environment.
