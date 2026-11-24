@@ -289,9 +289,10 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days = 7
 
   network_acls {
-    default_action             = "Deny"
-    bypass                     = "AzureServices"
-    ip_rules                   = var.my_ip
+    default_action = "Deny"
+    bypass         = "AzureServices"
+    # Key Vault exige CIDR; se normalizan IPs sueltas a /32
+    ip_rules                   = [for ip in var.my_ip : (can(regex("/", ip)) ? ip : "${ip}/32")]
     virtual_network_subnet_ids = [azurerm_subnet.app.id]
   }
 }
