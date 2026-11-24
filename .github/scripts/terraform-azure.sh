@@ -2,8 +2,8 @@
 set -euo pipefail
 
 mode="${1:-}"
-if [[ "$mode" != "plan" && "$mode" != "apply" ]]; then
-  echo "::error::Usage: terraform-azure.sh plan|apply"
+if [[ "$mode" != "plan" && "$mode" != "apply" && "$mode" != "destroy-plan" && "$mode" != "destroy" ]]; then
+  echo "::error::Usage: terraform-azure.sh plan|apply|destroy-plan|destroy"
   exit 2
 fi
 
@@ -83,7 +83,7 @@ vault_rg=""
 
 cleanup() {
   result=$?
-  if [[ "$mode" == "plan" || $result -ne 0 ]]; then
+  if [[ "$mode" == "plan" || "$mode" == "destroy-plan" || $result -ne 0 ]]; then
     if [[ "$vault_rule_added" == true ]]; then
       az keyvault network-rule remove \
         --resource-group "$vault_rg" \
@@ -145,10 +145,21 @@ if terraform state list 2>/dev/null | grep -Fxq 'azurerm_key_vault.kv'; then
   fi
 fi
 
-if [[ "$mode" == "apply" ]]; then
-  plan_file="$RUNNER_TEMP/caribeshop.tfplan"
-  terraform plan -input=false -no-color -lock-timeout=5m -out="$plan_file"
-  terraform apply -input=false -auto-approve -lock-timeout=5m "$plan_file"
-else
-  terraform plan -input=false -no-color -lock-timeout=5m
-fi
+case "$mode" in
+  plan)
+    terraform plan -input=false -no-color -lock-timeout=5m
+    ;;
+  apply)
+    plan_file="$RUNNER_TEMP/caribeshop.tfplan"
+    terraform plan -input=false -no-color -lock-timeout=5m -out="$plan_file"
+    terraform apply -input=false -auto-approve -lock-timeout=5m "$plan_file"
+    ;;
+  destroy-plan)
+    terraform plan -destroy -input=false -no-color -lock-timeout=5m
+    ;;
+  destroy)
+    plan_file="$RUNNER_TEMP/caribeshop-destroy.tfplan"
+    terraform plan -destroy -input=false -no-color -lock-timeout=5m -out="$plan_file"
+    terraform apply -input=false -auto-approve -lock-timeout=5m "$plan_file"
+    ;;
+esac
