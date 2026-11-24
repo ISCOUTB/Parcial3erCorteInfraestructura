@@ -44,3 +44,10 @@ con `#checkov:skip`). Requiere provider `azurerm ~> 4.0`.
 
 La plataforma integrada (seguridad + escalamiento + HA) está en la carpeta `caribeshop/`.
 Ver `caribeshop/README.md` para despliegue y pruebas. Las demos originales se conservan como referencia.
+
+## GitHub Actions
+
+El workflow `.github/workflows/terraform-checks.yml` se ejecuta en cada pull request y en los
+pushes a `main`. Bloquea la integración si fallan `terraform fmt -check`, `terraform validate`
+en ambas configuraciones Terraform, o Checkov. No requiere secretos ni acceso a Azure: no ejecuta
+`plan`, `apply` ni despliegues.
