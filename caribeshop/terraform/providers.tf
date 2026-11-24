@@ -18,7 +18,7 @@ terraform {
 
   # El estado contiene secretos; se almacena en el contenedor remoto de Azure.
   backend "azurerm" {
-    resource_group_name  = "statefordgarzautb"
+    resource_group_name  = "rg-tfstate"
     storage_account_name = "statefordgarzautb"
     container_name       = "tfstate"
     key                  = "caribeshop.tfstate"
