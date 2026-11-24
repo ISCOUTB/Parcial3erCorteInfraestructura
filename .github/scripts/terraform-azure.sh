@@ -74,7 +74,7 @@ ssh_key="$RUNNER_TEMP/caribeshop_deploy_key"
 ssh-keygen -q -t ed25519 -N "" -f "$ssh_key"
 export TF_VAR_ssh_public_key_path="$ssh_key.pub"
 
-state_rg="statefordgarzautb_1795488765173"
+state_rg="statefordgarzautb"
 state_account="statefordgarzautb"
 state_rule_added=false
 vault_rule_added=false
