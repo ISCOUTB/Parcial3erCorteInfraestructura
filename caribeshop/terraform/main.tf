@@ -362,9 +362,9 @@ resource "azurerm_linux_virtual_machine_scale_set" "vmss" {
     type = "SystemAssigned"
   }
 
-  secure_boot_enabled        = true
-  vtpm_enabled               = true
-  encryption_at_host_enabled = true
+  #checkov:skip=CKV_AZURE_97:Encryption at host no disponible en la suscripcion (Azure for Students); se usa cifrado de plataforma
+  secure_boot_enabled = true
+  vtpm_enabled        = true
 
   source_image_reference {
     publisher = "Canonical"

@@ -47,7 +47,11 @@ for value in operator_ips:
     network = ipaddress.ip_network(value, strict=False)
     if network.version != 4:
         raise SystemExit("OPERATOR_IPS must contain only IPv4 addresses/CIDRs")
-    operator_networks.append(str(network))
+    # Azure Storage rechaza /32 en ip_rules; se normaliza a IP suelta
+    if network.prefixlen == 32:
+        operator_networks.append(str(network.network_address))
+    else:
+        operator_networks.append(str(network))
 
 with urllib.request.urlopen("https://api.github.com/meta", timeout=30) as response:
     actions_ranges = json.load(response)["actions"]
@@ -61,7 +65,8 @@ if not any(runner in network for network in networks):
         "Current runner IP is not in GitHub's published Actions IPv4 ranges; refusing firewall changes"
     )
 
-rules = sorted(set(operator_networks + [f"{runner}/32"]))
+# Azure Storage no acepta /32 en ip_rules; se usa la IP suelta
+rules = sorted(set(operator_networks + [str(runner)]))
 if len(rules) > 400:
     raise SystemExit("OPERATOR_IPS plus runner address exceeds Azure's 400 IP-rule limit")
 print(json.dumps(rules, separators=(",", ":")))
