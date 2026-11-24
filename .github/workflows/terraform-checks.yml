@@ -5,23 +5,13 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
-    inputs:
-      confirm_apply:
-        description: "Confirmar el despliegue de recursos en Azure"
-        required: true
-        type: choice
-        options:
-          - "no"
-          - "yes"
-        default: "no"
 
 permissions:
   contents: read
 
 concurrency:
   group: terraform-checks-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   fmt:
@@ -72,7 +62,7 @@ jobs:
 
   terraform-plan:
     name: Azure Terraform plan
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     needs:
       - fmt
       - validate
@@ -101,11 +91,12 @@ jobs:
 
   terraform-apply:
     name: Azure Terraform apply
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' && inputs.confirm_apply == 'yes'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs:
       - fmt
       - validate
       - checkov
+      - terraform-plan
     runs-on: ubuntu-latest
     environment: azure-apply
     concurrency:

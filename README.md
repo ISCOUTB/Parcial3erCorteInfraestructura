@@ -50,9 +50,10 @@ Ver `caribeshop/README.md` para despliegue y pruebas. Las demos originales se co
 El workflow `.github/workflows/terraform-checks.yml` se ejecuta en cada pull request y en los
 pushes a `master`. Bloquea la integración si fallan `terraform fmt -check`, `terraform validate`
 en ambas configuraciones Terraform o Checkov. Para los PR del mismo repositorio también ejecuta
-`terraform plan` con el backend remoto de Azure. El `apply` solo puede iniciarse manualmente desde
-`master`, seleccionando `yes` en `workflow_dispatch`; configura el entorno `azure-apply` con un
-revisor requerido para aprobación adicional.
+`terraform plan` con el backend remoto de Azure. En cada push a `master`, el `plan` debe terminar
+correctamente antes de que el `apply` quede en espera de aprobación del entorno `azure-apply`.
+Configura ese environment con un revisor requerido; tras aprobar, el job vuelve a planificar y
+aplica ese plan.
 
 Configura estos Repository secrets: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`
 y `AZURE_SUBSCRIPTION_ID`. Configura además `OPERATOR_IPS` como variable con un arreglo JSON de

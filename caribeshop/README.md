@@ -73,5 +73,6 @@ CSV/HTML se guardan en `../evidencias/`.
 ## GitHub Actions
 
 El workflow valida formato, configuraciones y Checkov en cada PR. En PRs internos también ejecuta
-`terraform plan`; el `apply` es manual desde `master` y requiere confirmar `yes`. Ver el README de la
-raíz para los Repository secrets y variables requeridos.
+`terraform plan`. En un push a `master`, espera a que el plan termine antes de solicitar aprobación
+del environment `azure-apply`; después vuelve a planificar y aplica. Ver el README de la raíz para
+los Repository secrets y variables requeridos.
