@@ -16,16 +16,14 @@ terraform {
     }
   }
 
-  # Estado remoto cifrado con bloqueo (descomentar tras crear la cuenta de
-  # almacenamiento del estado; ver README). El estado CONTIENE secretos
-  # (valor de random_password), por eso nunca va a Git.
-  # backend "azurerm" {
-  #   resource_group_name  = "rg-tfstate"
-  #   storage_account_name = "sttfstate<suffix>"
-  #   container_name       = "tfstate"
-  #   key                  = "caribeshop.tfstate"
-  #   use_azuread_auth     = true
-  # }
+  # El estado contiene secretos; se almacena en el contenedor remoto de Azure.
+  backend "azurerm" {
+    resource_group_name  = "statefordgarzautb_1795488765173"
+    storage_account_name = "statefordgarzautb"
+    container_name       = "tfstate"
+    key                  = "caribeshop.tfstate"
+    use_azuread_auth     = true
+  }
 }
 
 provider "azurerm" {

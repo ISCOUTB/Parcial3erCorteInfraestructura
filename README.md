@@ -48,6 +48,21 @@ Ver `caribeshop/README.md` para despliegue y pruebas. Las demos originales se co
 ## GitHub Actions
 
 El workflow `.github/workflows/terraform-checks.yml` se ejecuta en cada pull request y en los
-pushes a `main`. Bloquea la integración si fallan `terraform fmt -check`, `terraform validate`
-en ambas configuraciones Terraform, o Checkov. No requiere secretos ni acceso a Azure: no ejecuta
-`plan`, `apply` ni despliegues.
+pushes a `master`. Bloquea la integración si fallan `terraform fmt -check`, `terraform validate`
+en ambas configuraciones Terraform o Checkov. Para los PR del mismo repositorio también ejecuta
+`terraform plan` con el backend remoto de Azure. El `apply` solo puede iniciarse manualmente desde
+`master`, seleccionando `yes` en `workflow_dispatch`; configura el entorno `azure-apply` con un
+revisor requerido para aprobación adicional.
+
+Configura estos Repository secrets: `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`
+y `AZURE_SUBSCRIPTION_ID`. Configura además `OPERATOR_IPS` como variable con un arreglo JSON de
+IPs/CIDR IPv4 autorizadas (por ejemplo, `["203.0.113.10/32"]`) y `ALERT_EMAIL` para habilitar la
+alerta requerida por correo. GitHub publica más de 5.000 rangos IPv4 para Actions, demasiados para
+agregarlos al firewall de Azure. El workflow verifica que la IP de salida actual del runner
+pertenezca a los rangos `actions` de `https://api.github.com/meta`; agrega solo esa IP `/32` a
+los firewalls necesarios y la quita del Storage de estado al terminar. Durante `apply`, Terraform
+incluye la IP del runner en los firewalls de CaribeShop. El principal necesita acceso al backend y
+permisos `Contributor`, `Resource Policy Contributor` y `User Access Administrator` en la
+suscripción, además de `Storage Blob Data Contributor` en el contenedor `tfstate`. El Storage
+Account del state debe permitir acceso público filtrado por reglas IP. Configura el entorno
+`azure-apply` con un revisor requerido para aprobación adicional.

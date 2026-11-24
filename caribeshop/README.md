@@ -27,6 +27,8 @@ terraform apply
 ```
 
 Autenticacion: `az login` + variable de entorno `ARM_SUBSCRIPTION_ID`.
+El backend remoto usa el Storage Account `statefordgarzautb`, contenedor `tfstate`; la identidad
+que ejecuta Terraform requiere el rol `Storage Blob Data Contributor` en ese contenedor.
 
 ## Como destruir
 
@@ -54,7 +56,7 @@ CSV/HTML se guardan en `../evidencias/`.
 
 ## Checklist de seguridad (linea base)
 
-- [x] Toda la infraestructura en Terraform; estado remoto (backend azurerm) opcional y nunca en Git
+- [x] Toda la infraestructura en Terraform; estado remoto (backend azurerm), nunca en Git
 - [x] Sin credenciales en el codigo
 - [x] VNet con subred de aplicacion; NSG de minimo privilegio; ninguna VM con IP publica; SSH/RDP no expuestos
 - [x] App lee secreto desde Key Vault con identidad administrada; KV con RBAC, purge protection, firewall, secreto con expiracion
@@ -70,4 +72,6 @@ CSV/HTML se guardan en `../evidencias/`.
 
 ## GitHub Actions
 
-Pendiente de implementar (D1). Se agregara workflow con `terraform fmt -check`, `validate` y Checkov bloqueante.
+El workflow valida formato, configuraciones y Checkov en cada PR. En PRs internos también ejecuta
+`terraform plan`; el `apply` es manual desde `master` y requiere confirmar `yes`. Ver el README de la
+raíz para los Repository secrets y variables requeridos.
